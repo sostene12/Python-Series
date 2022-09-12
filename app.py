@@ -1,30 +1,30 @@
-# Automate excel file
+# macine learning
+import pandas as pd
+from sklearn.tree import DecisionTreeClassifier
+import sklearn.externals
+import joblib
 
-import openpyxl as xl
-from openpyxl.chart import BarChart,Reference
+from sklearn import tree
 
-def process_workbook(filename):
-    wb=xl.load_workbook(filename)
-    sheet = wb['Sheet1']
+music_data = pd.read_csv('music.csv')
+X = music_data.drop(columns=['genre'])
+Y = music_data['genre']
 
-    for row in range(2,sheet.max_row + 1):
-        cell = sheet.cell(row,3)
+model = DecisionTreeClassifier()
+model.fit(X,Y)
 
-        # change the price
-        corrected_price = cell.value * 0.9
-        corrected_price_cell = sheet.cell(row,4)
-        corrected_price_cell.value = corrected_price
+tree.export_graphviz(
+    model,out_file='music_recommender.dot',
+    feature_names=['age','gender'],
+    class_names=sorted(Y.unique()),
+    label='all',
+    rounded=True,
+    filled=True
+)
 
-    #create bar chart
-    values = Reference(sheet,min_row=1,max_row=sheet.max_row,min_col=4,max_col=4)
-    chart = BarChart()
-    chart.add_data(values)
+# model = joblib.load('music-recommender.joblib')
 
-    sheet.add_chart(chart,'e2')
-
-    wb.save(filename)
-
-
-process_workbook('transactions.xlsx')
+# predictions = model.predict([[21,1]])
+# predictions
 
 
